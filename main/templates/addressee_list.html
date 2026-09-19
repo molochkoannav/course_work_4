@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+    <h1>Получатели</h1>
+    <a href="{% url 'main:addressee_create' %}" class="btn btn-primary">Добавить</a>
+</div>
+<table class="table table-striped bg-white">
+    <thead><tr><th>Email</th><th>Ф.И.О.</th><th>Комментарий</th><th></th></tr></thead>
+    <tbody>
+    {% for a in addressees %}
+        <tr>
+            <td>{{ a.email }}</td>
+            <td>{{ a.name }}</td>
+            <td>{{ a.comment|truncatechars:60 }}</td>
+            <td class="text-end">
+                <a href="{% url 'main:addressee_update' a.pk %}" class="btn btn-sm btn-outline-secondary">Изменить</a>
+                <a href="{% url 'main:addressee_delete' a.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="4">Нет получателей.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

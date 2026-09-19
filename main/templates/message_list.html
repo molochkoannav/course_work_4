@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+    <h1>Сообщения</h1>
+    <a href="{% url 'main:message_create' %}" class="btn btn-primary">Добавить</a>
+</div>
+<table class="table table-striped bg-white">
+    <thead><tr><th>Тема</th><th>Тело</th><th></th></tr></thead>
+    <tbody>
+    {% for m in messages %}
+        <tr>
+            <td>{{ m.subject }}</td>
+            <td>{{ m.body|truncatechars:80 }}</td>
+            <td class="text-end">
+                <a href="{% url 'main:message_update' m.pk %}" class="btn btn-sm btn-outline-secondary">Изменить</a>
+                <a href="{% url 'main:message_delete' m.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="3">Нет сообщений.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
