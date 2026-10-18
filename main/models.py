@@ -37,7 +37,7 @@ class Newsletter(models.Model):
         (STATUS_FINISHED, 'Завершена'),
     ]
 
-    first_sent_at = models.DateTimeField(null=True,blank=True, verbose_name='Дата и время первой отправки',)
+    first_sent_at = models.DateTimeField(verbose_name='Дата и время первой отправки',)
     end_at = models.DateTimeField(verbose_name='Дата и время окончания отправки',)
     status = models.CharField(max_length=20,choices=STATUS_CHOICES, default=STATUS_CREATED, verbose_name='Статус',)
     message = models.ForeignKey('Message', on_delete=models.CASCADE, related_name='mailings', verbose_name='Сообщение',)

@@ -61,4 +61,7 @@ class NewsletterForm(forms.ModelForm):
         if end and end <= timezone.now():
             raise ValidationError('Дата окончания должна быть в будущем.')
 
+        if first_sent and first_sent < timezone.now():
+            raise ValidationError('Дата первой отправки не должна быть в прошлом.')
+
         return cleaned
