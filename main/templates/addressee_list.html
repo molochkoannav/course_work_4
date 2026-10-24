@@ -1,25 +1,39 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="d-flex justify-content-between mb-3">
-    <h1>Получатели</h1>
-    <a href="{% url 'main:addressee_create' %}" class="btn btn-primary">Добавить</a>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Получатели</h1>
+    <!-- Кнопка "Добавить" в стиле вашего акцента -->
+    <a href="{% url 'main:addressee_create' %}" class="btn btn-accent px-4">Добавить</a>
 </div>
-<table class="table table-striped bg-white">
-    <thead><tr><th>Email</th><th>Ф.И.О.</th><th>Комментарий</th><th></th></tr></thead>
-    <tbody>
-    {% for a in addressees %}
-        <tr>
-            <td>{{ a.email }}</td>
-            <td>{{ a.name }}</td>
-            <td>{{ a.comment|truncatechars:60 }}</td>
-            <td class="text-end">
-                <a href="{% url 'main:addressee_update' a.pk %}" class="btn btn-sm btn-outline-secondary">Изменить</a>
-                <a href="{% url 'main:addressee_delete' a.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
-            </td>
-        </tr>
-    {% empty %}
-        <tr><td colspan="4">Нет получателей.</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
+
+<!-- Убрали bg-white, добавили свой класс custom-table -->
+<div class="table-responsive">
+    <table class="table custom-table align-middle">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Ф.И.О.</th>
+                <th>Комментарий</th>
+                <th class="text-end">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for a in addressees %}
+            <tr>
+                <td>{{ a.email }}</td>
+                <td>{{ a.name }}</td>
+                <td>{{ a.comment|truncatechars:60 }}</td>
+                <td class="text-end text-nowrap">
+                    <a href="{% url 'main:addressee_update' a.pk %}" class="btn btn-sm btn-action">Изменить</a>
+                    <a href="{% url 'main:addressee_delete' a.pk %}" class="btn btn-sm btn-action-danger">Удалить</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4" class="text-center py-4" style="color: var(--text-color); opacity: 0.7;">Нет получателей.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

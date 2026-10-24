@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="mt-2">
+    <h1 class="mb-4">{{ title }}</h1>
+    
+    <!-- Контейнер формы (темный в ночи, светлый в дне) -->
+    <form method="post" class="form-container">
+        {% csrf_token %}
+        
+        <!-- Вывод полей формы -->
+        <div class="form-fields">
+            {{ form.as_p }}
+        </div>
+        
+        <!-- Кнопки -->
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn btn-accent px-4">Сохранить</button>
+            <a href="{% url 'main:newsletter_list' %}" class="btn btn-cancel px-4">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

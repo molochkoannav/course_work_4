@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Рассылки</h1>
+    <a href="{% url 'main:newsletter_create' %}" class="btn btn-accent px-4">Создать</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table custom-table align-middle">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Сообщение</th>
+                <th>Статус</th>
+                <th>Первая отправка</th>
+                <th>Окончание</th>
+                <th class="text-end">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for n in newsletters %}
+            <tr>
+                <td>#{{ n.pk }}</td>
+                <td>{{ n.message.subject|truncatechars:30 }}</td>
+                <td>
+                    {% if n.status == 'Создана' %}
+                        <span class="badge bg-secondary">Создана</span>
+                    {% elif n.status == 'Запущена' %}
+                        <span class="badge bg-success text-dark">Запущена</span>
+                    {% elif n.status == 'Завершена' %}
+                        <span class="badge bg-dark border border-secondary">Завершена</span>
+                    {% endif %}
+                </td>
+                <td>{{ n.first_sent_at|date:"d.m.Y H:i"|default:"—" }}</td>
+                <td>{{ n.end_at|date:"d.m.Y H:i"|default:"—" }}</td>
+                <td class="text-end text-nowrap">
+                    <!-- Кнопка запуска (только для статуса "Создана") -->
+                    {% if n.status == 'Создана' %}
+                        <a href="{% url 'main:newsletter_send' n.pk %}" class="btn btn-sm btn-launch" title="Запустить рассылку">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8a.5.5 0 0 1 .615-.09z"/>
+                            </svg>
+                            Запустить
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'main:newsletter_detail' n.pk %}" class="btn btn-sm btn-action">Подробнее</a>
+                    <a href="{% url 'main:newsletter_update' n.pk %}" class="btn btn-sm btn-action">Изменить</a>
+                    <a href="{% url 'main:newsletter_delete' n.pk %}" class="btn btn-sm btn-action-danger">Удалить</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" class="text-center py-4" style="color: var(--text-color); opacity: 0.7;">Нет рассылок.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

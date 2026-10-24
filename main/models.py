@@ -37,8 +37,8 @@ class Newsletter(models.Model):
         (STATUS_FINISHED, 'Завершена'),
     ]
 
-    first_sent_at = models.DateTimeField(verbose_name='Дата и время первой отправки',)
-    end_at = models.DateTimeField(verbose_name='Дата и время окончания отправки',)
+    first_sent_at = models.DateTimeField( null=True, blank=True, verbose_name='Дата и время первой отправки',)
+    end_at = models.DateTimeField( null=True, blank=True, verbose_name='Дата и время окончания отправки',)
     status = models.CharField(max_length=20,choices=STATUS_CHOICES, default=STATUS_CREATED, verbose_name='Статус',)
     message = models.ForeignKey('Message', on_delete=models.CASCADE, related_name='mailings', verbose_name='Сообщение',)
     recipients = models.ManyToManyField('Addressee', related_name='mailings', verbose_name='Получатели',)
@@ -55,14 +55,12 @@ class Newsletter(models.Model):
         """Пересчитать статус на основе факта отправки и текущего времени."""
         now = timezone.now()
 
-        if now >= self.end_at:
-            # Время окончания прошло — рассылка завершена, независимо от отправки
+        now = timezone.now()
+        if self.end_at is not None and now >= self.end_at:
             new_status = self.STATUS_FINISHED
         elif self.first_sent_at is not None:
-            # Отправка была хотя бы раз — рассылка запущена
             new_status = self.STATUS_STARTED
         else:
-            # Отправки ещё не было — рассылка только создана
             new_status = self.STATUS_CREATED
 
         if self.status != new_status:
@@ -88,6 +86,8 @@ class Attempt(models.Model):
         verbose_name = 'Попытка рассылки'
         verbose_name_plural = 'Попытки рассылок'
         ordering = ['-attempted_at']
+        indexes = [models.Index(fields=['newsletter', '-attempted_at']),
+    ]
 
     def __str__(self):
         return f'Попытка #{self.pk} → {self.recipient.email} ({self.status})'

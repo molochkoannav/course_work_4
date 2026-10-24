@@ -1,10 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Удалить получателя?</h1>
-<p>{{ object }}</p>
-<form method="post">
-    {% csrf_token %}
-    <button class="btn btn-danger">Удалить</button>
-    <a href="{% url 'main:addressee_list' %}" class="btn btn-secondary">Отмена</a>
-</form>
+<div class="mt-4">
+    <h1 class="mb-4">Удалить получателя?</h1>
+    
+    <div class="alert alert-warning" role="alert" style="background-color: var(--nav-bg); color: var(--accent-color); border: 1px solid var(--accent-color);">
+        Вы уверены, что хотите удалить: <strong>{{ object }}</strong>?
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="d-flex gap-3 mt-4">
+            <!-- Кнопка удаления (красная, стандартная Bootstrap) -->
+            <button class="btn btn-danger px-4">Удалить</button>
+            
+            <!-- Кнопка отмены (стилизованная под вашу тему) -->
+            <a href="{% url 'main:addressee_list' %}" class="btn btn-outline-light px-4" style="border-color: var(--border-color); color: var(--text-color);">Отмена</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

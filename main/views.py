@@ -1,19 +1,21 @@
-from django.shortcuts import render
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages as flash
+from django.utils.timezone import now
 
 from .models import Addressee, Message, Newsletter, Attempt
 from .forms import AddresseeForm, MessageForm, NewsletterForm
 from .services import send_newsletter
-
+from django.utils import timezone
 
 # ---------- Главная страница ----------
 def index(request):
+    now = timezone.now()  
     context = {
         'total_newsletters': Newsletter.objects.count(),
         'active_newsletters': Newsletter.objects.filter(
-            status=Newsletter.STATUS_STARTED
+            first_sent_at__lte=now,       
+            end_at__gte=now,     
+            status=Newsletter.STATUS_STARTED,
         ).count(),
         'unique_recipients': Addressee.objects.count(),
     }
@@ -105,8 +107,7 @@ def newsletter_detail(request, pk):
     newsletter = get_object_or_404(Newsletter, pk=pk)
     newsletter.update_status()
     attempts = newsletter.attempts.select_related('recipient').all()
-    return render(request, 'newsletter_detail.html',
-                  {'newsletter': newsletter, 'attempts': attempts})
+    return render(request, 'newsletter_detail.html', {'newsletter': newsletter, 'attempts': attempts})
 
 
 def newsletter_create(request):

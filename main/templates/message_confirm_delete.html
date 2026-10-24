@@ -1,10 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Удалить сообщение?</h1>
-<p>{{ object }}</p>
-<form method="post">
-    {% csrf_token %}
-    <button class="btn btn-danger">Удалить</button>
-    <a href="{% url 'main:message_list' %}" class="btn btn-secondary">Отмена</a>
-</form>
+<div class="mt-4">
+    <h1 class="mb-4">Удалить сообщение?</h1>
+    
+    <!-- Блок предупреждения с текстом сообщения -->
+    <div class="alert alert-warning custom-alert" role="alert">
+        Вы уверены, что хотите удалить: <strong>{{ object }}</strong>?
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="d-flex gap-3 mt-4">
+            <!-- Кнопка удаления -->
+            <button class="btn btn-danger px-4">Удалить</button>
+            
+            <!-- Кнопка отмены -->
+            <a href="{% url 'main:message_list' %}" class="btn btn-cancel px-4">Отмена</a>
+        </div>
+    </form>
+</div>
 {% endblock %}
