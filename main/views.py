@@ -97,10 +97,23 @@ def message_delete(request, pk):
 # ---------- Рассылки ----------
 def newsletter_list(request):
     newsletters = Newsletter.objects.select_related('message').all()
+
+    filter_param = request.GET.get('filter')
+    if filter_param == 'active':
+        now = timezone.now()
+        newsletters = newsletters.filter(
+            first_sent_at__lte=now,
+            end_at__gte=now,
+            status=Newsletter.STATUS_STARTED,
+        )
+
     # статусы по времени
     for n in newsletters:
         n.update_status()
-    return render(request, 'newsletter_list.html', {'newsletters': newsletters})
+    return render(request, 'newsletter_list.html', {
+        'newsletters': newsletters,
+        'filter_param': filter_param,  
+    })
 
 
 def newsletter_detail(request, pk):
