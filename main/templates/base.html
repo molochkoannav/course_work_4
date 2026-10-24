@@ -433,6 +433,16 @@
             transform: scale(1.05);
             box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
         }
+
+      input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      filter: invert(1) sepia(3) saturate(20) hue-rotate(320deg);
+    cursor: pointer;
+    opacity: 0.9;
+
+/* Эффект при наведении */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+    filter: sepia(1) saturate(20) hue-rotate(320deg);
+}
     </style>
 </head>
 <body>

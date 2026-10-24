@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="mb-0">Рассылки</h1>
+    <div>
+        <h1 class="mb-1">
+            {% if filter_param == 'active' %}Активные рассылки{% else %}Рассылки{% endif %}
+        </h1>
+        {% if filter_param == 'active' %}
+            <a href="{% url 'main:newsletter_list' %}" class="small">
+                ← Показать все рассылки
+            </a>
+        {% endif %}
+    </div>
     <a href="{% url 'main:newsletter_create' %}" class="btn btn-accent px-4">Создать</a>
 </div>
 
@@ -34,7 +43,6 @@
                 <td>{{ n.first_sent_at|date:"d.m.Y H:i"|default:"—" }}</td>
                 <td>{{ n.end_at|date:"d.m.Y H:i"|default:"—" }}</td>
                 <td class="text-end text-nowrap">
-                    <!-- Кнопка запуска (только для статуса "Создана") -->
                     {% if n.status == 'Создана' %}
                         <a href="{% url 'main:newsletter_send' n.pk %}" class="btn btn-sm btn-launch" title="Запустить рассылку">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -43,7 +51,7 @@
                             Запустить
                         </a>
                     {% endif %}
-                    
+
                     <a href="{% url 'main:newsletter_detail' n.pk %}" class="btn btn-sm btn-action">Подробнее</a>
                     <a href="{% url 'main:newsletter_update' n.pk %}" class="btn btn-sm btn-action">Изменить</a>
                     <a href="{% url 'main:newsletter_delete' n.pk %}" class="btn btn-sm btn-action-danger">Удалить</a>
@@ -51,7 +59,14 @@
             </tr>
         {% empty %}
             <tr>
-                <td colspan="6" class="text-center py-4" style="color: var(--text-color); opacity: 0.7;">Нет рассылок.</td>
+                <td colspan="6" class="text-center py-4" style="color: var(--text-color); opacity: 0.7;">
+                    {% if filter_param == 'active' %}
+                        Нет активных рассылок.
+                        <a href="{% url 'main:newsletter_list' %}">Показать все</a>
+                    {% else %}
+                        Нет рассылок.
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>
