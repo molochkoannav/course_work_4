@@ -221,6 +221,9 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             flex: 1;
             overflow-y: auto;
+            min-height: 0; 
+    scrollbar-width: thin;
+}
         }
 
         /* Скроллбар */
@@ -438,10 +441,26 @@
       filter: invert(1) sepia(3) saturate(20) hue-rotate(320deg);
     cursor: pointer;
     opacity: 0.9;
+    }
 
 /* Эффект при наведении */
 input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
     filter: sepia(1) saturate(20) hue-rotate(320deg);
+}
+
+        /* --- НИЖНЯЯ ПАНЕЛЬ С КНОПКАМИ ВХОДА / РЕГИСТРАЦИИ --- */
+        .auth-bottom-bar {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 0 15px 20px 15px;
+            flex-wrap: wrap;
+        }
+
+        .content-wrapper:has(#register-page) {
+    overflow-y: visible !important;
 }
     </style>
 </head>
@@ -469,10 +488,10 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
                     <a class="nav-link" href="{% url 'main:newsletter_list' %}">Рассылки</a>
                 </div>
 
-                <!-- Кнопки справа -->
-                <div class="d-flex align-items-center">
+                <!-- Кнопки справа (без входа/регистрации) -->
+                <div class="d-flex align-items-center gap-2">
                     <a href="{% url 'main:newsletter_create' %}" class="btn btn-accent d-none d-md-block">Создать рассылку</a>
-                    
+
                     <button class="theme-toggle" id="themeToggle" title="Сменить тему">
                         <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -510,6 +529,23 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
         <div class="content-wrapper">
             {% block content %}{% endblock %}
         </div>
+    </div>
+
+    <!-- Нижняя панель: Войти / Регистрация (или Профиль) -->
+    <div class="auth-bottom-bar">
+        {% if user.is_authenticated %}
+            <span style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem;">
+                Вы вошли как <strong style="color: var(--accent-color);">{{ user.email }}</strong>
+            </span>
+            <a href="{% url 'users:profile' %}" class="btn btn-cancel">Профиль</a>
+            <form method="post" action="{% url 'users:logout' %}" style="display: inline; margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-accent">Выйти</button>
+            </form>
+        {% else %}
+            <a href="{% url 'users:login' %}" class="btn btn-cancel">Войти</a>
+            <a href="{% url 'users:register' %}" class="btn btn-accent">Регистрация</a>
+        {% endif %}
     </div>
 </div>
 

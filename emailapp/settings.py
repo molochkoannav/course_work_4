@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django_extensions',
+    'users.apps.UsersConfig',
 
     "main",
 ]
@@ -161,3 +162,28 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_TIMEOUT = 10
+
+AUTH_USER_MODEL = 'users.CustomUser'
+
+CACHE_ENABLED = True
+
+if CACHE_ENABLED:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/1",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "CONNECTION_POOL_KWARGS": {
+                    "protocol": 2,  
+                }  
+            }      
+        }          
+    }
+
+LOGIN_REDIRECT_URL = 'users:profile'     
+
+# Куда перенаправлять после выхода
+LOGOUT_REDIRECT_URL = 'main:index'       
+
+LOGIN_URL = 'users:login'    
