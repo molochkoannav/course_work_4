@@ -1,11 +1,13 @@
+from django.db.models import Q
+from django.db.models.aggregates import Count
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages as flash
 from django.utils.timezone import now
-
 from .models import Addressee, Message, Newsletter, Attempt
 from .forms import AddresseeForm, MessageForm, NewsletterForm
-from .services import send_newsletter
+from .services import send_newsletter, get_user_stats
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 # ---------- Главная страница ----------
 def index(request):
@@ -166,3 +168,20 @@ def newsletter_send(request, pk):
                       f'Отправка завершена: успешно {success} из {len(attempts)}.')
 
     return redirect('main:newsletter_detail', pk=pk)
+
+@login_required
+def stats_view(request):
+    summary = get_user_stats(request.user)
+    mailings = (
+        Newsletter.objects.filter(owner=request.user)
+        .annotate(
+            total=Count('attempts'),
+            successful=Count('attempts', filter=Q(attempts__status=Attempt.STATUS_SUCCESS)),
+            failed=Count('attempts', filter=Q(attempts__status=Attempt.STATUS_FAILED)),
+        )
+        .order_by('-pk')
+    )
+    return render(request, 'stats.html', {
+        'summary':    summary,
+        'mailings':   mailings,
+    })

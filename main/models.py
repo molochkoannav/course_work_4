@@ -1,20 +1,26 @@
 from django.db import models
 from django.utils import timezone
-
+from django.conf import settings
 
 class Addressee(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addressees', verbose_name='Владелец', null=True, blank=True)
     email = models.EmailField(unique=True, verbose_name='Email')
+    name = models.CharField(max_length=500, verbose_name='Ф.И.О.')
+    comment = models.TextField(blank=True, verbose_name='Комментарий')
+    email = models.EmailField(verbose_name='Email')
     name = models.CharField(max_length=500, verbose_name='Ф.И.О.')
     comment = models.TextField(blank=True, verbose_name='Комментарий')
 
     def __str__(self):
         return f'{self.name} ({self.email})'
     class Meta:
+        unique_together = [('owner', 'email')]
         verbose_name = 'Получатель рассылки'
         verbose_name_plural = 'Получатели рассылки'
         ordering = ['name']
 
 class Message(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='messages', verbose_name='Владелец', null=True, blank=True)
     subject = models.CharField(max_length=500, verbose_name='Тема письма')
     body = models.TextField(verbose_name='Тело письма')
     
@@ -36,7 +42,7 @@ class Newsletter(models.Model):
         (STATUS_STARTED, 'Запущена'),
         (STATUS_FINISHED, 'Завершена'),
     ]
-
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='newsletters', verbose_name='Владелец', null=True, blank=True)
     first_sent_at = models.DateTimeField( null=True, blank=True, verbose_name='Дата и время первой отправки',)
     end_at = models.DateTimeField( null=True, blank=True, verbose_name='Дата и время окончания отправки',)
     status = models.CharField(max_length=20,choices=STATUS_CHOICES, default=STATUS_CREATED, verbose_name='Статус',)

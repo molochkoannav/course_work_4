@@ -25,4 +25,7 @@ urlpatterns = [
     path('newsletters/<int:pk>/update/', views.newsletter_update, name='newsletter_update'),
     path('newsletters/<int:pk>/delete/', views.newsletter_delete, name='newsletter_delete'),
     path('newsletters/<int:pk>/send/', views.newsletter_send, name='newsletter_send'),
+
+    # Статистика 
+    path('stats/', views.stats_view, name='stats'),
 ]

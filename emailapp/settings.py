@@ -137,7 +137,7 @@ STATIC_URL = "static/"
 
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',   # ← общая папка static в корне проекта
+    BASE_DIR / 'static',   
 ]
 
 MEDIA_URL = '/media/'

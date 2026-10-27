@@ -1,5 +1,7 @@
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.models import Q
+from django.db.models.aggregates import Count
 from django.utils import timezone
 import logging
 from .models import Newsletter, Attempt
@@ -15,11 +17,12 @@ def send_newsletter(newsletter: Newsletter) -> list[Attempt]:
     attempts = []
     newsletter.update_status()
 
-    # Рассылку нельзя отправить, если она завершена
-    if newsletter.status == Newsletter.STATUS_FINISHED:
-        logger.info('Рассылка #%s завершена, отправка пропущена.', newsletter.pk)
+    # Если статус не "Запущена" — выходим
+    if newsletter.status != Newsletter.STATUS_STARTED:
+        logger.info('Рассылка #%s в статусе "%s", отправка запрещена.', newsletter.pk, newsletter.status)
         return attempts
 
+    # Получаем список получателей
     recipients = list(newsletter.recipients.all())
     if not recipients:
         logger.info('Рассылка #%s: нет получателей.', newsletter.pk)
@@ -31,6 +34,7 @@ def send_newsletter(newsletter: Newsletter) -> list[Attempt]:
 
     any_success = False
 
+    # Отправляем каждому
     for recipient in recipients:
         try:
             sent = send_mail(
@@ -59,11 +63,28 @@ def send_newsletter(newsletter: Newsletter) -> list[Attempt]:
                 status=Attempt.STATUS_FAILED,
                 server_response=str(exc),
             )
+        print(">>> ПОПЫТКА:", recipient.email, "статус:", attempt.status)
         attempts.append(attempt)
 
-    # Фиксируем первую отправку
+    # Фиксируем первую успешную отправку
     if any_success and newsletter.first_sent_at is None:
         newsletter.first_sent_at = timezone.now()
         newsletter.save(update_fields=['first_sent_at'])
-    newsletter.update_status()   
+
+    # Обновляем статус и ВСЕГДА возвращаем список attempts
+    newsletter.update_status()
     return attempts
+
+
+def get_user_stats(user):
+    """Успешные/неуспешные попытки и число отправленных сообщений."""
+    qs = Attempt.objects.filter(newsletter__owner=user)
+
+    data = qs.aggregate(
+        total_attempts=Count('id'),
+        successful=Count('id', filter=Q(status=Attempt.STATUS_SUCCESS)),
+        failed=Count('id', filter=Q(status=Attempt.STATUS_FAILED)),
+    )
+    total = data['total_attempts'] or 0
+    data['success_rate'] = round(data['successful'] / total * 100, 2) if total else 0
+    return data
