@@ -20,8 +20,10 @@
                 <td>{{ m.subject }}</td>
                 <td>{{ m.body|truncatechars:80 }}</td>
                 <td class="text-end text-nowrap">
+                    {% if a.owner == request.user %}
                     <a href="{% url 'main:message_update' m.pk %}" class="btn btn-sm btn-action">Изменить</a>
                     <a href="{% url 'main:message_delete' m.pk %}" class="btn btn-sm btn-action-danger">Удалить</a>
+                       {% endif %}
                 </td>
             </tr>
         {% empty %}

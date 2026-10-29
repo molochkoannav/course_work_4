@@ -44,17 +44,19 @@
                 <td>{{ n.end_at|date:"d.m.Y H:i"|default:"—" }}</td>
                 <td class="text-end text-nowrap">
                     {% if n.status == 'Создана' %}
-                        <a href="{% url 'main:newsletter_send' n.pk %}" class="btn btn-sm btn-launch" title="Запустить рассылку">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                              <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8a.5.5 0 0 1 .615-.09z"/>
-                            </svg>
-                            Запустить
-                        </a>
+                       {% if n.owner == request.user and n.status == 'Создана' %}
+    <form method="post" action="{% url 'main:newsletter_send' n.pk %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-launch">🚀</button>
+    </form>
+{% endif %}
                     {% endif %}
 
                     <a href="{% url 'main:newsletter_detail' n.pk %}" class="btn btn-sm btn-action">Подробнее</a>
-                    <a href="{% url 'main:newsletter_update' n.pk %}" class="btn btn-sm btn-action">Изменить</a>
-                    <a href="{% url 'main:newsletter_delete' n.pk %}" class="btn btn-sm btn-action-danger">Удалить</a>
+                    {% if n.owner == request.user %}
+    <a href="{% url 'main:newsletter_update' n.pk %}">✎</a>
+    <a href="{% url 'main:newsletter_delete' n.pk %}">🗑</a>
+{% endif %}
                 </td>
             </tr>
         {% empty %}

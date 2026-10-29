@@ -4,28 +4,32 @@ from . import views
 app_name = 'main'
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.IndexView.as_view(), name='index'),
 
     # Получатели
-    path('addressees/', views.addressee_list, name='addressee_list'),
-    path('addressees/create/', views.addressee_create, name='addressee_create'),
-    path('addressees/<int:pk>/update/', views.addressee_update, name='addressee_update'),
-    path('addressees/<int:pk>/delete/', views.addressee_delete, name='addressee_delete'),
+    path('addressees/', views.AddresseeListView.as_view(), name='addressee_list'),
+    path('addressees/create/', views.AddresseeCreateView.as_view(), name='addressee_create'),
+    path('addressees/<int:pk>/edit/', views.AddresseeUpdateView.as_view(), name='addressee_update'),
+    path('addressees/<int:pk>/delete/', views.AddresseeDeleteView.as_view(), name='addressee_delete'),
 
     # Сообщения
-    path('messages/', views.message_list, name='message_list'),
-    path('messages/create/', views.message_create, name='message_create'),
-    path('messages/<int:pk>/update/', views.message_update, name='message_update'),
-    path('messages/<int:pk>/delete/', views.message_delete, name='message_delete'),
+    path('messages/', views.MessageListView.as_view(), name='message_list'),
+    path('messages/create/', views.MessageCreateView.as_view(), name='message_create'),
+    path('messages/<int:pk>/edit/', views.MessageUpdateView.as_view(), name='message_update'),
+    path('messages/<int:pk>/delete/', views.MessageDeleteView.as_view(), name='message_delete'),
 
     # Рассылки
-    path('newsletters/', views.newsletter_list, name='newsletter_list'),
-    path('newsletters/create/', views.newsletter_create, name='newsletter_create'),
-    path('newsletters/<int:pk>/', views.newsletter_detail, name='newsletter_detail'),
-    path('newsletters/<int:pk>/update/', views.newsletter_update, name='newsletter_update'),
-    path('newsletters/<int:pk>/delete/', views.newsletter_delete, name='newsletter_delete'),
-    path('newsletters/<int:pk>/send/', views.newsletter_send, name='newsletter_send'),
+    path('newsletters/', views.NewsletterListView.as_view(), name='newsletter_list'),
+    path('newsletters/create/', views.NewsletterCreateView.as_view(), name='newsletter_create'),
+    path('newsletters/<int:pk>/', views.NewsletterDetailView.as_view(), name='newsletter_detail'),
+    path('newsletters/<int:pk>/edit/', views.NewsletterUpdateView.as_view(), name='newsletter_update'),
+    path('newsletters/<int:pk>/delete/', views.NewsletterDeleteView.as_view(), name='newsletter_delete'),
+    path('newsletters/<int:pk>/send/', views.NewsletterSendView.as_view(), name='newsletter_send'),
 
-    # Статистика 
-    path('stats/', views.stats_view, name='stats'),
+
+    path('stats/', views.StatsView.as_view(), name='stats'),
+
+    path('users/', views.UserListView.as_view(), name='user_list'),
+    path('users/<int:user_id>/block/', views.BlockUserView.as_view(), name='user_block'),
+    path('newsletters/<int:pk>/disable/', views.DisableNewsletterView.as_view(), name='newsletter_disable'),
 ]
