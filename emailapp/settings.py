@@ -181,7 +181,7 @@ if CACHE_ENABLED:
         }          
     }
 
-LOGIN_REDIRECT_URL = 'users:profile'     
+LOGIN_REDIRECT_URL = 'main:index'  
 
 # Куда перенаправлять после выхода
 LOGOUT_REDIRECT_URL = 'main:index'       
