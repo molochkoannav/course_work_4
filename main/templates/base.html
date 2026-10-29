@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Сервис рассылок{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">  
+     {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="main-wrapper">
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <div class="nav-container w-100">
+                <!-- Логотип -->
+                <a class="navbar-brand" href="{% url 'main:index' %}">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="var(--accent-color)"/>
+                        <path d="M2 17L12 22L22 17" stroke="var(--accent-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="var(--accent-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Главная
+                </a>
+
+                <!-- Ссылки -->
+                <div class="navbar-nav d-none d-lg-flex flex-row">
+                    <a class="nav-link" href="{% url 'main:addressee_list' %}">Получатели</a>
+                    <a class="nav-link" href="{% url 'main:message_list' %}">Сообщения</a>
+                    <a class="nav-link" href="{% url 'main:newsletter_list' %}">Рассылки</a>
+                </div>
+
+                <!-- Кнопки справа (без входа/регистрации) -->
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'main:newsletter_create' %}" class="btn btn-accent d-none d-md-block">Создать рассылку</a>
+
+                    <button class="theme-toggle" id="themeToggle" title="Сменить тему">
+                        <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="container-fluid">
+        <div class="hero-section">
+            <h1 class="hero-title">
+                СЕРВИС 
+                РАССЫЛОК
+            </h1>
+        </div>
+
+        <!-- Блок вывода сообщений Django -->
+        {% if messages %}
+            <div class="row justify-content-center flex-shrink-0">
+                <div class="col-md-8">
+                    {% for msg in messages %}
+                        <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+                            {{ msg }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Блок контента (будет скроллиться внутри, если контента много) -->
+        <div class="content-wrapper">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Нижняя панель: Войти / Регистрация (или Профиль) -->
+    <div class="auth-bottom-bar">
+        {% if user.is_authenticated %}
+            <span style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem;">
+                Вы вошли как <strong style="color: var(--accent-color);">{{ user.email }}</strong>
+            </span>
+            <a href="{% url 'users:profile' %}" class="btn btn-cancel">Профиль</a>
+            <form method="post" action="{% url 'users:logout' %}" style="display: inline; margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-accent">Выйти</button>
+            </form>
+        {% else %}
+            <a href="{% url 'users:login' %}" class="btn btn-cancel">Войти</a>
+            <a href="{% url 'users:register' %}" class="btn btn-accent">Регистрация</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Скрипт переключения темы -->
+<script>
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlElement = document.documentElement;
+    const themeIcon = document.getElementById('themeIcon');
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    htmlElement.setAttribute('data-theme', savedTheme);
+    updateIcon(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = htmlElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        htmlElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateIcon(newTheme);
+    });
+
+    function updateIcon(theme) {
+        if (theme === 'dark') {
+            themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        } else {
+            themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+        }
+    }
+</script>
+</body>
+</html>

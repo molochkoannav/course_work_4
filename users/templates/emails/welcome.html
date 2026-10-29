@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добро пожаловать!</title>
+</head>
+<body style="margin: 0; padding: 0; background: #0a0a0a; font-family: 'Inter', Arial, Helvetica, sans-serif;">
+
+    <!-- Внешний контейнер -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+           style="background: #0a0a0a; padding: 40px 15px;">
+        <tr>
+            <td align="center">
+
+                <!-- Карточка письма -->
+                <table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0"
+                       style="max-width: 480px; width: 100%; background: #1a1a1a;
+                              border-radius: 20px; border: 1px solid #333;
+                              box-shadow: 0 5px 20px rgba(0,0,0,0.3);">
+
+                    <!-- Логотип / бренд -->
+                    <tr>
+                        <td style="padding: 30px 30px 0 30px; text-align: center;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                                <tr>
+                                    <td style="vertical-align: middle; padding-right: 10px;">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#d4ff3f"/>
+                                            <path d="M2 17L12 22L22 17" stroke="#d4ff3f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M2 12L12 17L22 12" stroke="#d4ff3f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        <span style="color: #ffffff; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px;">СЕРВИС РАССЫЛОК</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Заголовок -->
+                    <tr>
+                        <td style="padding: 25px 30px 10px 30px; text-align: center;">
+                            <h1 style="margin: 0; color: #d4ff3f; font-size: 1.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; line-height: 1.1;">
+                                Добро пожаловать!
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Приветствие -->
+                    <tr>
+                        <td style="padding: 10px 30px 0 30px;">
+                            <p style="margin: 0 0 16px 0; color: #ffffff; font-size: 1rem; line-height: 1.5; font-weight: 600;">
+                                Здравствуйте{% if user.username %}, <span style="color: #d4ff3f;">{{ user.username }}</span>{% endif %}!
+                            </p>
+                            <p style="margin: 0 0 16px 0; color: #b3a8bf; font-size: 0.95rem; line-height: 1.5;">
+                                Спасибо за регистрацию. Ваш аккаунт успешно создан — теперь вы можете
+                                пользоваться всеми возможностями сервиса. Пора обносочиться!
+                            </p>
+                            <p style="margin: 0 0 24px 0; color: #b3a8bf; font-size: 0.95rem; line-height: 1.5;">
+                                Если вы не регистрировались — просто проигнорируйте это письмо.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Кнопка -->
+                    <tr>
+                        <td align="center" style="padding: 0 30px 30px 30px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td align="center"
+                                        style="background: #d4ff3f; border-radius: 50px;">
+                                        <a href="{{ login_url|default:'#' }}"
+                                           style="display: inline-block; padding: 12px 32px;
+                                                  color: #000000; font-size: 0.95rem;
+                                                  font-weight: 700; text-decoration: none;
+                                                  border-radius: 50px;">
+                                            Войти в аккаунт
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Разделитель -->
+                    <tr>
+                        <td style="padding: 0 30px;">
+                            <hr style="border: none; border-top: 1px solid #333; margin: 0;">
+                        </td>
+                    </tr>
+
+                    <!-- Подпись -->
+                    <tr>
+                        <td style="padding: 20px 30px 30px 30px; text-align: center;">
+                            <p style="margin: 0 0 8px 0; color: #b3a8bf; font-size: 0.85rem;">
+                                С уважением,<br>команда сервиса
+                            </p>
+                            <p style="margin: 0; color: #6b5b7a; font-size: 0.75rem;">
+                                Это письмо отправлено автоматически, не отвечайте на него.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                <!-- /Карточка -->
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

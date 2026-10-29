@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="mb-4">Главная</h1>
+<div class="row">
+    <div class="col-md-4">
+        <a href="{% url 'main:newsletter_list' %}" class="text-decoration-none text-reset">
+            <div class="card text-center mb-3 h-100 card-hover">
+                <div class="card-body">
+                    <h5 class="card-title">Всего рассылок</h5>
+                    <p class="display-6 mb-0">{{ total_newsletters }}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'main:newsletter_list' %}?filter=active" class="text-decoration-none text-reset">
+            <div class="card text-center mb-3 h-100 card-hover">
+                <div class="card-body">
+                    <h5 class="card-title">Активных рассылок</h5>
+                    <p class="display-6 mb-0">{{ active_newsletters }}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'main:addressee_list' %}" class="text-decoration-none text-reset">
+            <div class="card text-center mb-3 h-100 card-hover">
+                <div class="card-body">
+                    <h5 class="card-title">Уникальных получателей</h5>
+                    <p class="display-6 mb-0">{{ unique_recipients }}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

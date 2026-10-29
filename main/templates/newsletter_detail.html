@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Рассылка #{{ newsletter.pk }}</h1>
+    <div class="d-flex gap-2 flex-wrap">
+
+        {% if can_edit %}
+            {# --- Блок для ВЛАДЕЛЬЦА рассылки --- #}
+            {% if newsletter.status == 'Создана' %}
+                <form method="post" action="{% url 'main:newsletter_send' newsletter.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-launch px-4">🚀 Запустить рассылку</button>
+                </form>
+            {% endif %}
+
+            <a href="{% url 'main:newsletter_update' newsletter.pk %}" class="btn btn-cancel px-4">
+                Редактировать
+            </a>
+            <a href="{% url 'main:newsletter_delete' newsletter.pk %}" class="btn btn-cancel px-4">
+                Удалить
+            </a>
+        {% else %}
+            {# --- Блок для МЕНЕДЖЕРА (чужая рассылка) --- #}
+            <span class="badge bg-secondary align-self-center">Режим просмотра (чужая рассылка)</span>
+            
+            {# Проверяем, есть ли у менеджера право отключать рассылки и не завершена ли она уже #}
+            {% if perms.main.can_disable_newsletters and newsletter.status != 'Завершена' %}
+                <form method="post" action="{% url 'main:newsletter_disable' newsletter.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger px-4" onclick="return confirm('Принудительно отключить эту рассылку?')">
+                        Отключить
+                    </button>
+                </form>
+            {% endif %}
+        {% endif %}
+
+        <a href="{% url 'main:newsletter_list' %}" class="btn btn-cancel px-4">Назад к списку</a>
+    </div>
+</div>
+
+<!-- Карточка с информацией о рассылке -->
+<div class="card mb-4" style="background-color: var(--nav-bg); border: 1px solid var(--border-color);">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Сообщение:</strong> {{ newsletter.message.subject }}</p>
+                <p><strong>Статус:</strong>
+                    {% if newsletter.status == 'Создана' %}
+                        <span class="badge bg-secondary">Создана</span>
+                    {% elif newsletter.status == 'Запущена' %}
+                        <span class="badge bg-success text-dark">Запущена</span>
+                    {% else %}
+                        <span class="badge bg-dark border border-secondary">Завершена</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Первая отправка:</strong> {{ newsletter.first_sent_at|date:"d.m.Y H:i"|default:"—" }}</p>
+                <p><strong>Окончание:</strong> {{ newsletter.end_at|date:"d.m.Y H:i"|default:"—" }}</p>
+            </div>
+        </div>
+
+        <hr style="border-color: var(--border-color);">
+
+        <p><strong>Получатели:</strong></p>
+        <div class="d-flex flex-wrap gap-2">
+            {% for recipient in newsletter.recipients.all %}
+                <span class="badge" style="background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color);">
+                    {{ recipient.email }}
+                </span>
+            {% empty %}
+                <span style="color: var(--text-color); opacity: 0.6;">Получатели не добавлены.</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- История попыток (Attempt) -->
+<h3 class="mb-3">История попыток</h3>
+<div class="table-responsive">
+    <table class="table custom-table align-middle">
+        <thead>
+            <tr>
+                <th>Дата и время</th>
+                <th>Получатель</th>
+                <th>Статус</th>
+                <th>Ответ сервера</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for attempt in attempts %}
+            <tr>
+                <td>{{ attempt.attempted_at|date:"d.m.Y H:i:s" }}</td>
+                <td>{{ attempt.recipient.email }}</td>
+                <td>
+                    {% if attempt.status == 'Успешно' %}
+                        <span class="text-success">Успешно</span>
+                    {% else %}
+                        <span class="text-danger">Не успешно</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span style="font-size: 0.85rem; opacity: 0.8;" title="{{ attempt.server_response }}">
+                        {{ attempt.server_response|truncatechars:50|default:"—" }}
+                    </span>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4" class="text-center py-4" style="color: var(--text-color); opacity: 0.7;">Попыток еще не было.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
