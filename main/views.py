@@ -14,7 +14,9 @@ from django.contrib import messages as flash
 from .forms import AddresseeForm, MessageForm, NewsletterForm
 from .models import Addressee, Message, Newsletter, Attempt
 from .services import send_newsletter, get_user_stats
-
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 User = get_user_model()
 
 # ==========================================
@@ -22,9 +24,11 @@ User = get_user_model()
 # ==========================================
 
 def is_manager(user):
-    """Проверка: является ли пользователь менеджером."""
-    return user.is_authenticated and user.groups.filter(name='Менеджеры').exists() or user.groups.filter(name='Админы').exists()
-
+    return user.is_authenticated and (
+        user.is_superuser or
+        user.groups.filter(name='Менеджеры').exists() or 
+        user.groups.filter(name='Админы').exists()
+    )
 
 class ManagerVisibleQuerysetMixin:
     """Менеджер видит все объекты, обычный пользователь — только свои."""
@@ -47,6 +51,7 @@ class OwnerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 # ==========================================
 # 2. Главная страница
 # ==========================================
+
 
 class IndexView(TemplateView):          
     template_name = 'index.html'
@@ -288,7 +293,8 @@ class NewsletterSendView(LoginRequiredMixin, View):
 # ==========================================
 # 6. Статистика
 # ==========================================
-
+@method_decorator(cache_page(60), name='dispatch')
+@method_decorator(vary_on_cookie, name='dispatch')
 class StatsView(LoginRequiredMixin, TemplateView):
     template_name = 'stats.html'
 
